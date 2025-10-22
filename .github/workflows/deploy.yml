@@ -65,7 +65,7 @@ jobs:
         run: echo "FLUTTER_BASE_HREF=/galvan-webapp/" >> $GITHUB_ENV
 
       - name: Build Flutter web
-        run: fvm flutter build web --release --base-href /galvan-webapp/
+        run: fvm flutter build web --release --base-href /galvan-webapp/ --dart-define=API_URL=${{ secrets.API_URL }} --dart-define=API_KEY=${{ secrets.API_KEY }}
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
