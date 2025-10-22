@@ -61,6 +61,9 @@ jobs:
       - name: Get dependencies
         run: fvm flutter pub get
 
+      - name: Set Flutter base href
+        run: echo "FLUTTER_BASE_HREF=/galvan-webapp/" >> $GITHUB_ENV
+
       - name: Build Flutter web
         run: fvm flutter build web --release
 
