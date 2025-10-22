@@ -9,56 +9,82 @@ permissions:
   contents: write
 
 jobs:
-
   setup:
-    name: Setup FVM & Flutter
+    name: Setup Flutter & FVM
     runs-on: ubuntu-latest
     outputs:
-      flutter-path: ${{ steps.flutter-path.outputs.path }}
+      flutter-version: ${{ steps.get-version.outputs.version }}
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Instala Flutter (incluye Dart)
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      # Instala FVM usando Dart (ya disponible)
       - name: Install FVM
         run: dart pub global activate fvm
 
-      - name: Install Flutter via FVM
-        id: flutter-path
+      # Instala versión definida en fvm_config.json (o .fvm/flutter_sdk)
+      - name: Install Flutter version via FVM
+        id: get-version
         run: |
           fvm install
-          echo "::set-output name=path::$(fvm flutter --version | head -n 1)"
+          echo "version=$(fvm flutter --version | head -n 1)" >> $GITHUB_OUTPUT
 
   build:
     name: Build Flutter Web
     runs-on: ubuntu-latest
     needs: setup
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Use Flutter from FVM
-        run: |
-          export PATH="$HOME/.pub-cache/bin:$PATH"
-          fvm flutter --version
+      # Instalar Flutter y FVM de nuevo (cada job es aislado)
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
 
-      - name: Clean previous build
+      - name: Install FVM
+        run: dart pub global activate fvm
+
+      - name: Use FVM Flutter version
+        run: fvm install
+
+      - name: Clean build
         run: fvm flutter clean
 
       - name: Get dependencies
         run: fvm flutter pub get
 
-      - name: Build web
+      - name: Build Flutter web
         run: fvm flutter build web --release
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: build/web
 
   deploy:
     name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Deploy
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: web-build
+          path: build/web
+
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
