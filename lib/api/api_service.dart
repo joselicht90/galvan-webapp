@@ -13,7 +13,7 @@ class ApiService {
   ApiService()
     : _dio = Dio(
         BaseOptions(
-          baseUrl: String.fromEnvironment('API_URL'),
+          baseUrl: const String.fromEnvironment('API_URL'),
           connectTimeout: const Duration(seconds: 10),
           receiveTimeout: const Duration(seconds: 10),
           headers: {'Content-Type': 'application/json'},
@@ -52,7 +52,7 @@ class ApiService {
       '/webapp/login',
       options: Options(
         headers: {
-          'Authorization': 'Bearer ${String.fromEnvironment('API_KEY')}',
+          'Authorization': 'Bearer ${const String.fromEnvironment('API_KEY')}',
         },
       ),
       data: {'username': username, 'password': password},
