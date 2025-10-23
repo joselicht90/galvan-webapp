@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:galvan_webapp/utils/app_router.dart';
 import 'api/api_service.dart';
 import 'di/injection.dart'; // si estás usando injectable/get_it
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Carga el .env
-  await dotenv.load(fileName: ".env");
 
   // Configurar dependencias si usas injectable
   await configureDependencies();

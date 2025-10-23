@@ -1,5 +1,5 @@
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:galvan_webapp/api/api_service.dart';
 import 'package:galvan_webapp/models/nft_web_app.dart';
 import 'package:injectable/injectable.dart';
