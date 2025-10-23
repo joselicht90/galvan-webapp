@@ -14,6 +14,7 @@ import 'package:injectable/injectable.dart' as _i526;
 
 import '../api/api_service.dart' as _i299;
 import '../screens/login/login_cubit.dart' as _i664;
+import '../screens/nft_form/nft_form_cubit.dart' as _i741;
 
 extension GetItInjectableX on _i174.GetIt {
   // initializes the registration of main-scope dependencies inside of GetIt
@@ -25,6 +26,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i299.ApiService>(() => _i299.ApiService());
     gh.factory<_i664.LoginCubit>(
       () => _i664.LoginCubit(apiService: gh<_i299.ApiService>()),
+    );
+    gh.factory<_i741.NftFormCubit>(
+      () => _i741.NftFormCubit(apiService: gh<_i299.ApiService>()),
     );
     return this;
   }

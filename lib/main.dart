@@ -11,8 +11,9 @@ Future<void> main() async {
   await dotenv.load(fileName: ".env");
 
   // Configurar dependencias si usas injectable
-  configureDependencies();
+  await configureDependencies();
 
+  await getIt<ApiService>().loadTokenFromCookie();
   runApp(MyApp());
 }
 
