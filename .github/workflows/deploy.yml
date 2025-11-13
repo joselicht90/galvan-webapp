@@ -9,34 +9,62 @@ permissions:
   contents: write
 
 jobs:
-  build:
-    name: Build Flutter Web
+  setup:
+    name: Setup Flutter & FVM
     runs-on: ubuntu-latest
-
+    outputs:
+      flutter-version: ${{ steps.get-version.outputs.version }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Instala Flutter estable directamente
+      # Instala Flutter (incluye Dart)
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
-          flutter-version: 3.24.0 # 🔧 Cambia a la versión que usás localmente
+
+      # Instala FVM usando Dart (ya disponible)
+      - name: Install FVM
+        run: dart pub global activate fvm
+
+      # Instala versión definida en fvm_config.json (o .fvm/flutter_sdk)
+      - name: Install Flutter version via FVM
+        id: get-version
+        run: |
+          fvm install 3.35.6
+
+  build:
+    name: Build Flutter Web
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Instalar Flutter y FVM de nuevo (cada job es aislado)
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Install FVM
+        run: dart pub global activate fvm
+
+      - name: Use FVM Flutter version
+        run: fvm install
 
       - name: Clean build
-        run: flutter clean
+        run: fvm flutter clean
 
       - name: Get dependencies
-        run: flutter pub get
+        run: fvm flutter pub get
 
       - name: Set Flutter base href
         run: echo "FLUTTER_BASE_HREF=/galvan-webapp/" >> $GITHUB_ENV
 
       - name: Build Flutter web
-        run: flutter build web --release --base-href /galvan-webapp/ \
-          --dart-define=API_URL=${{ secrets.API_URL }} \
-          --dart-define=API_KEY=${{ secrets.API_KEY }}
+        run: fvm flutter build web --release --base-href /galvan-webapp/ --dart-define=API_URL=${{ secrets.API_URL }} --dart-define=API_KEY=${{ secrets.API_KEY }}
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
@@ -48,7 +76,6 @@ jobs:
     name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
     needs: build
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
