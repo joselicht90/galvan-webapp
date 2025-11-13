@@ -32,7 +32,8 @@ jobs:
       - name: Install Flutter version via FVM
         id: get-version
         run: |
-          fvm install 3.35.6
+          fvm install
+          echo "version=$(fvm flutter --version | head -n 1)" >> $GITHUB_OUTPUT
 
   build:
     name: Build Flutter Web
@@ -52,7 +53,7 @@ jobs:
         run: dart pub global activate fvm
 
       - name: Use FVM Flutter version
-        run: fvm install
+        run: fvm install 3.35.6
 
       - name: Clean build
         run: fvm flutter clean
