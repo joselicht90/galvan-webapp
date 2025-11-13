@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:galvan_webapp/utils/app_router.dart';
+import 'package:galvan_webapp/utils/theme.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'api/api_service.dart';
 import 'di/injection.dart'; // si estás usando injectable/get_it
 
@@ -18,15 +20,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final appRouter = AppRouter(apiService: getIt<ApiService>());
+    final appRouter = AppRouter();
 
-    return MaterialApp.router(
-      title: 'Flutter GALVAN APP',
-      routerConfig: appRouter.router,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      debugShowCheckedModeBanner: false,
+    return ResponsiveSizer(
+      maxTabletWidth: 840,
+      maxMobileWidth: 640,
+      builder: (context, orientation, screenType) {
+        return MaterialApp.router(
+          title: 'Flutter GALVAN APP',
+          routerConfig: appRouter.router,
+          theme: appTheme,
+
+        );
+      },
     );
   }
 }

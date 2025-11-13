@@ -24,11 +24,11 @@ extension GetItInjectableX on _i174.GetIt {
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     gh.lazySingleton<_i299.ApiService>(() => _i299.ApiService());
-    gh.factory<_i664.LoginCubit>(
-      () => _i664.LoginCubit(apiService: gh<_i299.ApiService>()),
-    );
     gh.factory<_i741.NftFormCubit>(
       () => _i741.NftFormCubit(apiService: gh<_i299.ApiService>()),
+    );
+    gh.factory<_i664.LoginCubit>(
+      () => _i664.LoginCubit(apiService: gh<_i299.ApiService>()),
     );
     return this;
   }

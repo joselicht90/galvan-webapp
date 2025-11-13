@@ -14,7 +14,7 @@ class LoginScreen extends StatelessWidget {
     return BlocProvider.value(
       value: getIt<LoginCubit>(),
       child: Scaffold(
-        appBar: AppBar(title: const Text('Login')),
+        appBar: AppBar(title: const Text('Galvan Admin Web')),
         body: LoginForm(),
       ),
     );
@@ -39,40 +39,68 @@ class LoginForm extends StatelessWidget {
           }
         },
         builder: (context, state) {
-          return Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            spacing: 20,
-            children: [
-              Text('Login Screen'),
-              SizedBox(height: 20),
-              FormBuilderTextField(
-                name: 'username',
-                enabled: !state.isLoading,
-                decoration: InputDecoration(labelText: 'Username'),
-                validator: FormBuilderValidators.compose([
-                  FormBuilderValidators.required(),
-                ]),
-              ),
-              FormBuilderTextField(
-                name: 'password',
-                enabled: !state.isLoading,
-                decoration: InputDecoration(labelText: 'Password'),
-                obscureText: true,
-                validator: FormBuilderValidators.compose([
-                  FormBuilderValidators.required(),
-                ]),
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: state.isLoading
-                    ? null
-                    : () {
-                        context.read<LoginCubit>().submit();
-                      },
-                child: Text('Login'),
-              ),
-            ],
+          return Padding(
+            padding: const EdgeInsets.all(40),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return Center(
+                  child: SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: constraints.maxWidth < 500
+                            ? constraints.maxWidth
+                            : 800,
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        spacing: 20,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            child: Image.asset(
+                              'assets/icons/app_icon.png',
+                              height: 100,
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                          FormBuilderTextField(
+                            name: 'username',
+                            enabled: !state.isLoading,
+                            decoration: InputDecoration(labelText: 'Username'),
+                            validator: FormBuilderValidators.compose([
+                              FormBuilderValidators.required(),
+                            ]),
+                          ),
+                          FormBuilderTextField(
+                            name: 'password',
+                            enabled: !state.isLoading,
+                            decoration: InputDecoration(labelText: 'Password'),
+                            obscureText: true,
+                            validator: FormBuilderValidators.compose([
+                              FormBuilderValidators.required(),
+                            ]),
+                          ),
+                          SizedBox(height: 20),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: state.isLoading
+                                  ? null
+                                  : () {
+                                      context.read<LoginCubit>().submit();
+                                    },
+                              child: Text('Login'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }
+            ),
           );
         },
       ),

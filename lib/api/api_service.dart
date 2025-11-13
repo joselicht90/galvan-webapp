@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:galvan_webapp/models/nft_web_app.dart';
+import 'package:galvan_webapp/models/proof_of_action.dart';
 import 'package:injectable/injectable.dart';
 
 // Nuevo import moderno para entorno web
@@ -87,30 +88,96 @@ class ApiService {
   // ------------------- NFT CRUD -------------------
 
   Future<NftWebApp> createNft(NftWebApp nft) async {
-    final response = await _dio.post('/webapp/nfts', data: nft.toJson());
+    final response = await _dio.post('/webapp/nft', data: nft.toJson());
     return NftWebApp.fromJson(response.data);
   }
 
   Future<NftWebApp> updateNft(NftWebApp nft) async {
     final response = await _dio.put(
-      '/webapp/nfts/${nft.id}',
+      '/webapp/nft/${nft.id}',
       data: nft.toJson(),
     );
     return NftWebApp.fromJson(response.data);
   }
 
   Future<void> deleteNft(int id) async {
-    await _dio.delete('/webapp/nfts/$id');
+    await _dio.delete('/webapp/nft/$id');
   }
 
   Future<List<NftWebApp>> getNfts() async {
-    final response = await _dio.get('/webapp/nfts');
+    final response = await _dio.get('/webapp/nft');
     final List data = response.data as List;
     return data.map((e) => NftWebApp.fromJson(e)).toList();
   }
 
   Future<NftWebApp> getNftById(int id) async {
-    final response = await _dio.get('/webapp/nfts/$id');
+    final response = await _dio.get('/webapp/nft/$id');
     return NftWebApp.fromJson(response.data);
+  }
+
+  // ------------------- Availability -------------------
+
+  /// Creates a new availability period for a NFT
+  Future<void> createAvailability(
+    int nftId,
+    DateTime startAt,
+    DateTime endAt,
+  ) async {
+    await _dio.post(
+      '/webapp/nft/availability',
+      data: {
+        'nftId': nftId,
+        'startAt': startAt.toIso8601String(),
+        'endAt': endAt.toIso8601String(),
+      },
+    );
+  }
+
+  /// Stops the current availability for a NFT by setting endAt = now
+  Future<void> stopAvailability(int nftId) async {
+    await _dio.patch('/webapp/nft/availability/$nftId/stop');
+  }
+
+  /// Returns the list of availability periods for a NFT
+  Future<List<Map<String, dynamic>>> getAvailabilities(int nftId) async {
+    final response = await _dio.get('/webapp/nft/$nftId/availability');
+    final List data = response.data as List;
+    return List<Map<String, dynamic>>.from(data);
+  }
+
+  // ------------------- Proof of Action -------------------
+
+  /// Obtiene todos los registros de Proof of Action
+  Future<List<ProofOfAction>> getProofsOfAction() async {
+    final response = await _dio.get('/webapp/proof-of-action');
+    final List data = response.data as List;
+    return data.map((e) => ProofOfAction.fromJson(e)).toList();
+  }
+
+  /// Crea un nuevo Proof of Action
+  Future<ProofOfAction> createProofOfAction(ProofOfAction proof) async {
+    final response = await _dio.post(
+      '/webapp/proof-of-action',
+      data: proof.toJson(),
+    );
+    return ProofOfAction.fromJson(response.data);
+  }
+
+  /// Obtiene un Proof of Action por ID
+  Future<ProofOfAction> getProofOfActionById(int id) async {
+    final response = await _dio.get('/webapp/proof-of-action/$id');
+    return ProofOfAction.fromJson(response.data);
+  }
+
+  /// Aprueba o desaprueba un Proof of Action
+  Future<void> approveProof(int id) async {
+    await _dio.patch(
+      '/webapp/proof-of-action/$id/approve'
+    );
+  }
+
+  /// Elimina un Proof of Action
+  Future<void> deleteProofOfAction(int id) async {
+    await _dio.delete('/webapp/proof-of-action/$id');
   }
 }

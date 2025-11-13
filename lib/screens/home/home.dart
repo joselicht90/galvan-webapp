@@ -53,7 +53,14 @@ class HomeBody extends StatelessWidget {
                   leading: Icon(Icons.input),
                   title: Text('NFT'),
                   onTap: () {
-                    context.push('/nft_form');
+                    context.push('/nfts');
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.check_circle),
+                  title: Text('Proof of Action'),
+                  onTap: () {
+                    context.push('/proof_of_action');
                   },
                 ),
               ],
